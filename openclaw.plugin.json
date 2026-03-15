@@ -1,0 +1,26 @@
+{
+  "id": "privacy-guardrail",
+  "name": "Privacy Guardrail",
+  "version": "1.3.0",
+  "description": "Blocks direct writes to public paths via write, edit, exec, and bash tools. Forces staging pipeline for all public content.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": true
+      },
+      "protectedPaths": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Path prefixes that require publish.sh. Checked against write, edit, exec, and bash tool calls."
+      },
+      "monitorOnly": {
+        "type": "boolean",
+        "default": false,
+        "description": "Log violations without blocking (for testing)"
+      }
+    }
+  }
+}
