@@ -176,7 +176,7 @@ Part of a four-layer privacy defense stack:
 
 | Layer | Project | What It Guards |
 |-------|---------|---------------|
-| Memory boundaries | openclaw-agent-privacy (coming soon) | Which memories each agent can access |
+| Memory boundaries | [openclaw-agent-privacy](https://github.com/jamebobob/openclaw-agent-privacy) | Which memories each agent can access |
 | **Write path enforcement** | **openclaw-privacy-guardrail** | **Which paths the agent can write to directly** |
 | System context | [openclaw-sticky-context](https://github.com/jamebobob/openclaw-sticky-context) | Which operational details each agent can see |
 | Output scrubbing | [openclaw-privacy-protocol](https://github.com/jamebobob/openclaw-privacy-protocol) | What actually leaves the system toward public surfaces |
