@@ -10,6 +10,14 @@ We proved this to ourselves twice in three days. Once in a blog post, once in a 
 
 The fix isn't better rules. It's a wall. This plugin makes it structurally impossible for the agent to write to public paths without passing through a privacy scrub first.
 
+## Scope
+
+This plugin guards **write paths only** -- the write, edit, exec, and bash tools. It prevents agents from writing directly to protected paths without passing through the staging pipeline.
+
+For **read path enforcement** (controlling which files an agent can read), see [openclaw-read-guardrail](https://github.com/jamebobob/openclaw-read-guardrail).
+
+This plugin is **not per-agent** -- it guards all agents equally. The same protected path prefixes apply to the main agent and all social-* agents. There is no per-agent write policy; every agent sees the same blocked paths.
+
 ## How It Works
 
 The plugin hooks `before_tool_call` and intercepts four tools:
@@ -160,13 +168,15 @@ These are accepted for the threat model (habit defense, not adversarial defense)
 
 If your threat model includes an agent actively trying to circumvent the guardrail, you need additional controls. This plugin defends against forgetting, not against intent.
 
+- **No per-agent write isolation**: There is no per-agent write isolation equivalent to read-guardrail. `fs.workspaceOnly` restricts writes to the agent's configured workspace directory, but there is no `before_tool_call` hook verifying write paths the way read-guardrail does for reads. Low risk because each agent's workspace field points to its own directory, but defense-in-depth is missing.
+
 ## Audit History
 
 - **v3**: Initial. Two blockers found (whitelist chaining bypass, protected path prefix overlap)
 - **v4**: Fixed v3 blockers. Added exec normalization, ln/curl/wget patterns. New blocker: apply_patch wrong param, bash tool not intercepted
 - **v5**: Fixed all v4 findings. apply_patch guard removed (OpenAI-only tool, not applicable). bash tool added
 - **v6**: Spaceless redirect pattern. Cleaned dead code. Version in startup log
-- **v7**: Added `file_path` param fallback on write/edit tools (Eve's audit finding F6: OpenClaw tools accept both `path` and `file_path` parameter names; checking only one creates a silent bypass)
+- **v7**: Added `file_path` param fallback on write/edit tools (Live agent audit finding F6: OpenClaw tools accept both `path` and `file_path` parameter names; checking only one creates a silent bypass)
 
 Six audit rounds: initial design, Claude Code review, fresh Opus red team, two re-audits after fixes, and a final infrastructure audit by the agent the plugin protects.
 
@@ -176,7 +186,9 @@ Part of a four-layer privacy defense stack:
 
 | Layer | Project | What It Guards |
 |-------|---------|---------------|
+| Parent framework | [openclaw-agent-privacy](https://github.com/jamebobob/openclaw-agent-privacy) | Overall privacy framework for multi-agent deployments |
 | Memory boundaries | [openclaw-agent-privacy](https://github.com/jamebobob/openclaw-agent-privacy) | Which memories each agent can access |
+| Read path enforcement | [openclaw-read-guardrail](https://github.com/jamebobob/openclaw-read-guardrail) | Read path enforcement with per-agent workspace isolation |
 | **Write path enforcement** | **openclaw-privacy-guardrail** | **Which paths the agent can write to directly** |
 | System context | [openclaw-sticky-context](https://github.com/jamebobob/openclaw-sticky-context) | Which operational details each agent can see |
 | Output scrubbing | [openclaw-privacy-protocol](https://github.com/jamebobob/openclaw-privacy-protocol) | What actually leaves the system toward public surfaces |
