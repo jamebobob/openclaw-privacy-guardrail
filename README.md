@@ -1,3 +1,5 @@
+> **Archived April 2026.** Built on [OpenClaw](https://github.com/openclaw/openclaw) and moved off of it when the active work migrated to [Hermes](https://github.com/hermes-agent/hermes-agent). The design ideas in this repo might still be useful. The platform wiring is obsolete.
+
 # openclaw-privacy-guardrail
 
 An OpenClaw plugin that blocks direct writes to public-facing paths. Forces all public content through a staging pipeline with a mandatory privacy scrub.
